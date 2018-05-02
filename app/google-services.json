@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "244075201852",
+    "firebase_url": "https://mapmarkers-5d57b.firebaseio.com",
+    "project_id": "mapmarkers-5d57b",
+    "storage_bucket": "mapmarkers-5d57b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:244075201852:android:5d9f0e7340e2b864",
+        "android_client_info": {
+          "package_name": "com.example.shauryamanocha.mapmarkers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "244075201852-brguo9chaacljto8a2o8f2onchjmjqpf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.shauryamanocha.mapmarkers",
+            "certificate_hash": "aeb7c4472f4a7d8a3456d3ebb71e2819efb2299c"
+          }
+        },
+        {
+          "client_id": "244075201852-oqpaeri3iq82s386d938nv65lco8cedk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAb-wfR_B74l5rwyYysiU9h4iSKlTvapmA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "244075201852-oqpaeri3iq82s386d938nv65lco8cedk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
