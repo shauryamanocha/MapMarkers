@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthCredential;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -31,6 +32,8 @@ public class googleSignIn extends AppCompatActivity  {
     MapsActivity maps;
     boolean schoolSelected = false;
     String school  = "Not Selected";
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+    public static User user = new User();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +62,7 @@ public class googleSignIn extends AppCompatActivity  {
         schoolSelect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(googleSignIn.this,parent.getItemAtPosition(position) + " Selected",Toast.LENGTH_SHORT).show();
+
                 school = (String)parent.getItemAtPosition(position);
                 schoolSelected = true;
             }
@@ -67,14 +70,14 @@ public class googleSignIn extends AppCompatActivity  {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 schoolSelected = false;
-                Toast.makeText(googleSignIn.this,"NOTHING",Toast.LENGTH_SHORT).show();
+
             }
         });
     }
     @Override
     public void onStart(){
         super.onStart();
-        MapsActivity.user = MapsActivity.auth.getCurrentUser();
+
     }
     private void signIn() {
         Intent signInIntent = signInClient.getSignInIntent();
@@ -94,28 +97,29 @@ public class googleSignIn extends AppCompatActivity  {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 authorizeWithGoogle(account);
             } catch (ApiException e) {
-                Toast.makeText(googleSignIn.this,"" + e, Toast.LENGTH_LONG).show();
                 // Google Sign In failed, update UI appropriately
-                //Log.w(TAG, "Google sign in failed", e);
+                Log.w("TAG", "Google sign in failed", e);
                 // ...
             }
-        }else{
         }
     }
 
 
     private void authorizeWithGoogle(GoogleSignInAccount account){
         final AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(),null);
-        MapsActivity.auth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        auth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
-                    MapsActivity.user = MapsActivity.auth.getCurrentUser();
+                    user.name = auth.getCurrentUser().getDisplayName();
+                    user.id = auth.getUid();
+                    user.school = school;
                     //MapsActivity.test(MapsActivity.auth.getCurrentUser());
                     Toast.makeText(googleSignIn.this,"Signed in ", Toast.LENGTH_SHORT).show();
                     Log.d("googleAuth","Signed in");
                     startActivity(new Intent(googleSignIn.this,MapsActivity.class));
-                    maps.onAuth(school);
+                    maps.onAuth(new User(user.name,user.school,user.id));
+                    MapsActivity.user = user;
                 }else{
                     Toast.makeText(googleSignIn.this,"Authentication Error", Toast.LENGTH_SHORT).show();
                 }
