@@ -115,17 +115,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         reference = database.getReference("Database");
 
     }
-
-//    public String uuid(int len){
-//        String val = "";
-//        Random rand = new Random();
-//        for(int i = 0;i<len;i++){
-//            val += (rand.nextInt(9));
-//        }
-//        return val;
-//    }
-
-
+    
     public double distance(customLatLng first, customLatLng second){
         double x2 = second.latitude;
         double x1 = first.latitude;
@@ -137,8 +127,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void addNewMarker(Location location) {
         if(location!=null) {
-            //reference.child("Schools").child(currentSchool).child("Users").child("User"+auth.getUid()).child("Amount").setValue(1);
-            //reference.child("Schools").child(currentSchool).child("Amount").setValue(schoolAmount);
             MarkerOptions options = new MarkerOptions();
             customLatLng latlng = new customLatLng(location.getLatitude(), location.getLongitude(), location.getTime(),1,auth.getUid());
 //            for (customLatLng l : sessionLocations) {
@@ -157,7 +145,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //            }
 //            if (!alreadyExists) {
                 options = latlng.getMarkerOptions();
-                Toast.makeText(getBaseContext().getApplicationContext(), "New Place", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext().getApplicationContext(), "Marker Added", Toast.LENGTH_SHORT).show();
                 mMap.addMarker(new MarkerOptions().position(options.getPosition()).title(options.getTitle()).icon(BitmapDescriptorFactory.fromResource(R.drawable.star)));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng.toLatLng()));
                 sessionLocations.add(latlng);
@@ -178,7 +166,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 });
                 user.hits.add(latlng);
                 updateDatabase();
-                //reference.child("Hits").child("Hit"+location.getTime()).setValue(latlng);
 //            } else {
 //                Toast.makeText(getBaseContext().getApplicationContext(), "Already Exists", Toast.LENGTH_SHORT).show();
 //            }
