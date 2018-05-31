@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="schoolList">
-        <item>School1</item>
-        <item>School2</item>
-        <item>School3</item>
-        <item>School4</item>
+        <item>Craig Kielburger</item>
+        <item>White Oaks</item>
+        <item>Bishop Redding</item>
+        <item>Jean Vanier</item>
     </string-array>
 </resources>

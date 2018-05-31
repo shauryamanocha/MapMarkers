@@ -7,7 +7,7 @@ public class User {
     public String id;
     public int amount;
     public ArrayList<customLatLng> hits = new ArrayList<>();
-    public String school;
+    public School school;
     public User(){
 
     }
@@ -20,26 +20,26 @@ public class User {
         this.name = name;
         this.id = id;
         this.amount = 0;
-        this.school = school;
+        this.school = new School(school,0);
     }
     public User(String name,String school, String id, int amount){
         this.name = name;
         this.id = id;
         this.amount = amount;
-        this.school = school;
+        this.school = new School(school,0);
     }
     public User(String name,String school, String id, ArrayList<customLatLng> hits){
         this.name = name;
         this.id = id;
         amount = 0;
         this.hits = hits;
-        this.school = school;
+        this.school = new School(school,0);
     }
     public User(String name,String school, String id, int amount, ArrayList<customLatLng> hits){
         this.name = name;
         this.id = id;
         this.amount = amount;
         this.hits = hits;
-        this.school = school;
+        this.school = new School(school,0);
     }
 }

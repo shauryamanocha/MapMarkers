@@ -14,33 +14,37 @@ public class customLatLng {
     int amount;
     long id;
     String user;
+    long time;
     public customLatLng(){
     }
 
-    public customLatLng(double lat, double lng, long _id, int amt, String user){
+    public customLatLng(double lat, double lng, long _id, int amt, String user, long time){
         latitude = lat;
         longitude = lng;
         amount = amt;
         marker = new MarkerOptions().position(this.toLatLng()).title(amount + " Detections Here");
         id = _id;
         this.user = user;
+        this.time = time;
     }
-    public customLatLng(double lat, double lng, long _id, long amt, String user){
+    public customLatLng(double lat, double lng, long _id, long amt, String user, long time){
         latitude = lat;
         longitude = lng;
         amount = (int)amt;
         marker = new MarkerOptions().position(this.toLatLng()).title(amount + " Detections Here");
         id = _id;
         this.user = user;
+        this.time = time;
     }
 
-    public customLatLng(LatLng l, long _id, int amt, String user){
+    public customLatLng(LatLng l, long _id, int amt, String user, long time){
         latitude = l.latitude;
         longitude = l.longitude;
         amount = amt;
         marker = new MarkerOptions().position(this.toLatLng()).title(amount + " Detections Here");
         id = _id;
         this.user = user;
+        this.time = time;
     }
     public LatLng toLatLng(){
         return new LatLng(latitude, longitude);

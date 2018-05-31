@@ -10,6 +10,8 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         tools:context=".MapsActivity" />
 
     <Button
@@ -22,7 +24,7 @@
         android:text="Add New Marker" />
 
     <Button
-        android:id="@+id/signIn"
+        android:id="@+id/googleButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -30,4 +32,12 @@
         android:layout_marginTop="45dp"
         android:elevation="0dp"
         android:text="Sign In" />
+
+    <Button
+        android:id="@+id/stats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/newMarker"
+        android:layout_alignTop="@+id/googleButton"
+        android:text="View Statistics" />
 </RelativeLayout>

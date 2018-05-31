@@ -12,14 +12,10 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-
 import android.util.Log;
 import android.view.View;
-
 import android.widget.Button;
-
 import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
@@ -28,6 +24,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,10 +34,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,73 +58,86 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ArrayList<customLatLng> sessionLocations;
     Button newMarkerButton;
     public static FirebaseAuth auth;
-    double radiusPerHit = 1;
-    double localRadius = 10;
+//    double radiusPerHit = 1;
+//    double localRadius = 10;
     Button signIn;
+    Button stats;
     static boolean signedIn = false;
+    Stats statsPage;
 
 
-    int schoolAmount = 0;
     //static FirebaseUser user;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-
     public static User user = new User();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.activity_main4);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(R.id.googleMap);
         mapFragment.getMapAsync(this);
         sessionLocations = new ArrayList<>();
         auth = FirebaseAuth.getInstance();
         alreadyExists = false;
         locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-        newMarkerButton = findViewById(R.id.newMarker);
-        newMarkerButton.setOnClickListener(new View.OnClickListener() {
+        statsPage = new Stats();
+//        newMarkerButton = findViewById(R.id.newMarker);
+//        newMarkerButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(signedIn) {
+//                    addNewMarker(currentLocation);
+//                }else{
+//                    Toast.makeText(MapsActivity.this,"Sign In To Add Markers",Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
+
+
+
+//        signIn = findViewById(R.id.googleButton);
+//        signIn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                startActivity(new Intent(MapsActivity.this,googleSignIn.class));
+//            }
+//        });
+        stats = findViewById(R.id.statisticsPage);
+        stats.setOnClickListener(new View.OnClickListener(){
+
             @Override
             public void onClick(View v) {
-                if(signedIn) {
-                    addNewMarker(currentLocation);
-                }else{
-                    Toast.makeText(MapsActivity.this,"Sign In",Toast.LENGTH_SHORT).show();
-                }
+                startActivity(new Intent(MapsActivity.this,Stats.class));
+                updateGraph();
             }
         });
-
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(false)
-                .build();
-        db.setFirestoreSettings(settings);
-
-        signIn = findViewById(R.id.signIn);
-        signIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MapsActivity.this,googleSignIn.class));
-            }
-        });
-
-        MapsInitializer.initialize(getApplicationContext());
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        reference = database.getReference("Database");
-
+//
+//        MapsInitializer.initialize(getApplicationContext());
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        reference = database.getReference("Database");
+//
+//
+//        statsPage = new Stats();
     }
-    
-    public double distance(customLatLng first, customLatLng second){
-        double x2 = second.latitude;
-        double x1 = first.latitude;
-        double y2 = second.longitude;
-        double y1 = first.longitude;
-        double distance = Math.sqrt(Math.pow(x2-x1,2) + Math.pow(y2-y1,2));
-        return distance;
-    }
+
+//    public double distance(customLatLng first, customLatLng second){
+//        double x2 = second.latitude;
+//        double x1 = first.latitude;
+//        double y2 = second.longitude;
+//        double y1 = first.longitude;
+//        double distance = Math.sqrt(Math.pow(x2-x1,2) + Math.pow(y2-y1,2));
+//        return distance;
+//    }
 
     public void addNewMarker(Location location) {
         if(location!=null) {
-            MarkerOptions options = new MarkerOptions();
-            customLatLng latlng = new customLatLng(location.getLatitude(), location.getLongitude(), location.getTime(),1,auth.getUid());
+            MarkerOptions options;
+            customLatLng latlng = new customLatLng(location.getLatitude(), location.getLongitude(), location.getTime(),1,auth.getUid(),System.currentTimeMillis());
 //            for (customLatLng l : sessionLocations) {
 //                if (distance(l,latlng)<radiusPerHit) {
 //                    alreadyExists = true;
@@ -157,6 +166,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Map<String,Object> amount = new HashMap<>();
                             amount.put("amount",1);
                             db.collection("Schools").document(user.school).set(amount);
+
                         }else if(documentSnapshot.getData().get("amount") != null){
                             Map<String,Object> amount = new HashMap<>();
                             amount.put("amount",(long)documentSnapshot.getData().get("amount")+1);
@@ -180,21 +190,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (location != null) {
             MarkerOptions options;
             options = location.getMarkerOptions();
-//            Toast.makeText(getBaseContext().getApplicationContext(),"New Place", Toast.LENGTH_SHORT).show();
             mMap.addMarker(new MarkerOptions().position(options.getPosition()).title(options.getTitle()).icon(BitmapDescriptorFactory.fromResource(R.drawable.star)));
-//            mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
             sessionLocations.add(location);
-//            reference.child("Positions").child("Hit" + uuid(20)).setValue(latlng); //This one is only called when populating the array from Firebase
+
         }
     }
     @Override
     public void onStart(){
         super.onStart();
-    }
-
-    public void onAuth(User user){
-        signedIn = true;
-        user = googleSignIn.user;
     }
 
     public void updateDatabase(){
@@ -210,6 +213,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        reference.put("Reference","Schools/"+user.school+"/Users"+user.id+"/hits");
 //        db.collection("References").add(reference);
         db.collection("References").document(user.name+" "+user.id).set(new HitReference(user.school,"User "+user.id));
+        updateGraph();
+    }
+
+    public void updateGraph(){
+        db.collection("Schools")
+                .orderBy("amount", Query.Direction.DESCENDING)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for(QueryDocumentSnapshot doc : task.getResult()){
+                             Log.w("Stats","Amount :" + doc.getData().get("amount")  +" School:"+ doc.getData().get("school"));
+//                             Stats.populate((int)(long)doc.getData().get("amount") + 0);
+//                             statsPage.populate((int)(long)doc.getData().get("amount") + 0);
+                                statsPage.populate(new graphPoint("test",(int)(long)doc.getData().get("amount")));
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w("Stats","Failed " + e.toString());
+            }
+        });
     }
 
     @Override
@@ -238,7 +264,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         for(Map.Entry<String,Object> h : hitsHash.entrySet()){
                                             HashMap<String,Object> currentHit = (HashMap)h.getValue();
                                             Log.w("hitdata",currentHit.get("longitude")+"");
-                                            addNewMarker(new customLatLng((double)currentHit.get("latitude"),(double)currentHit.get("longitude"),(long)currentHit.get("id"),(long)currentHit.get("amount"),(String)currentHit.get("user")));
+                                            addNewMarker(new customLatLng((double)currentHit.get("latitude"),(double)currentHit.get("longitude"),(long)currentHit.get("id"),(long)currentHit.get("amount"),(String)currentHit.get("user"),System.currentTimeMillis()));
                                         }
                                     }
                                 });
@@ -254,7 +280,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.INTERNET)!= PackageManager.PERMISSION_GRANTED) {
             // for ActivityCompat#requestPermissions for more details.
             ActivityCompat.requestPermissions(this,permissions,1);
-            return;
         }else {
             if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
                 currentProvider = LocationManager.GPS_PROVIDER;
